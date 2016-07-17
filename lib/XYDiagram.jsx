@@ -698,6 +698,7 @@ export default class XYDiagram extends React.Component {
 
 		let yPoints = ""
 		if (yBars) {
+			// draw y values as bars
 			const yZero = transformY(0)
 			let moveLeft
 			if (!y2Bars && !y3Bars) {
@@ -723,6 +724,7 @@ export default class XYDiagram extends React.Component {
 				}
 			}
 		} else {
+			// draw y values as line-strip
 			for (let i = 0; i < numYPoints; i += xStep) {
 				const x = this.props.x[i]
 				const y = this.props.y[i]
@@ -731,6 +733,7 @@ export default class XYDiagram extends React.Component {
 				}
 			}
 			if (xStep > 1) {
+				// if we are stepping over values, make sure to add the last one
 				const i = numYPoints - 1
 				const x = this.props.x[i]
 				const y = this.props.y[i]
