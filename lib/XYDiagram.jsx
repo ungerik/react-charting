@@ -367,6 +367,9 @@ export default class XYDiagram extends React.Component {
 	}
 
 	render() {
+		////////////////////////////////////////////////////////////////////////////////
+		// Set constants to work with:
+
 		const leftMarkerVisible = this.isLeftMarkerVisible()
 		const rightMarkerVisible = this.isRightMarkerVisible()
 
@@ -423,6 +426,9 @@ export default class XYDiagram extends React.Component {
 		const y3Scale = rangeHeight / y3Range
 		const y4Scale = rangeHeight / y4Range
 
+		////////////////////////////////////////////////////////////////////////////////
+		// Transform x/y values to graphics coordinates:
+
 		function transformX(x) {
 			return axisXOffset + xOffset + (x*xFactor - xMin) * xScale
 		}
@@ -443,10 +449,16 @@ export default class XYDiagram extends React.Component {
 			return axisYOffset + (y4*y4Factor - y4Min) * y4Scale
 		}
 
+		////////////////////////////////////////////////////////////////////////////////
+		// Axis lines:
+
 		let axisPoints = `${axisXOffsetFixed},${rangeTop} ${axisXOffsetFixed},${axisYOffsetFixed} ${rightAxisX},${axisYOffsetFixed}`
 		if (hasRightYLabels) {
 			axisPoints += ` ${rightAxisXFixed},${rangeTop}`
 		}
+
+		////////////////////////////////////////////////////////////////////////////////
+		// Grid lines:
 
 		let xGridLinesD = ""
 		let yGridLinesD = ""
@@ -486,6 +498,9 @@ export default class XYDiagram extends React.Component {
 				]
 			}
 		}
+
+		////////////////////////////////////////////////////////////////////////////////
+		// Labels:
 
 		const numYPoints = Math.min(this.props.x.length, this.props.y.length)
 
@@ -676,6 +691,9 @@ export default class XYDiagram extends React.Component {
 			)
 		}
 
+		////////////////////////////////////////////////////////////////////////////////
+		// y data series graphics:
+
 		const bars = []
 
 		let yPoints = ""
@@ -746,6 +764,9 @@ export default class XYDiagram extends React.Component {
 			}
 		}
 
+		////////////////////////////////////////////////////////////////////////////////
+		// y2 data series graphics:
+
 		let numY2Points = 0
 		let y2Points = ""
 		if (this.props.y2) {
@@ -793,6 +814,9 @@ export default class XYDiagram extends React.Component {
 				}
 			}
 		}
+
+		////////////////////////////////////////////////////////////////////////////////
+		// y3 data series graphics:
 
 		let numY3Points = 0
 		let y3Points = ""
@@ -842,6 +866,9 @@ export default class XYDiagram extends React.Component {
 			}
 		}
 
+		////////////////////////////////////////////////////////////////////////////////
+		// y4 data series graphics:
+
 		let numY4Points = 0
 		let y4Points = ""
 		if (this.props.y4) {
@@ -863,6 +890,8 @@ export default class XYDiagram extends React.Component {
 			}
 		}
 
+		////////////////////////////////////////////////////////////////////////////////
+		// Markers vor data series points:
 
 		const markers = []
 		if (markerSize > 0) {
@@ -968,6 +997,9 @@ export default class XYDiagram extends React.Component {
 			}
 		}
 
+		////////////////////////////////////////////////////////////////////////////////
+		// Draw background color based on data series:
+
 		const bg = []
 		if (this.props.bgValues && this.props.bgValues.length > 0 && this.props.bgColorFunc) {
 			const numPoints = Math.min(this.props.x.length, this.props.bgValues.length)
@@ -991,6 +1023,12 @@ export default class XYDiagram extends React.Component {
 			}
 		}
 
+		////////////////////////////////////////////////////////////////////////////////
+		// X range markers left and right:
+
+		// TODO draw markers only when active,
+		// but initialize drag interactions when activated after component was mounted
+
 		let leftMarkerX = 0
 		let leftMarkerHeight = 0
 		if (leftMarkerVisible) {
@@ -1004,6 +1042,9 @@ export default class XYDiagram extends React.Component {
 			rightMarkerX = transformX(this.props.rightMarkerX)
 			rightMarkerHeight = rangeHeight
 		}
+
+		////////////////////////////////////////////////////////////////////////////////
+		// Text in diagram center:
 
 		const centerText = this.props.centerText.length === 0 ? null : (
 			<text
