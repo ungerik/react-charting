@@ -386,6 +386,7 @@ export default class XYDiagram extends React.Component {
 		const hasXLabels = this.hasXLabels()
 		const hasLeftYLabels = this.hasLeftYLabels()
 		const hasRightYLabels = this.hasRightYLabels()
+		const hasYLabels = hasLeftYLabels || hasRightYLabels
 
 		const { xFactor, width, height, selectedIndex } = this.props
 		const { yMin, yMax, yFactor, yBars } = this.props
@@ -400,7 +401,7 @@ export default class XYDiagram extends React.Component {
 		const rightAxisXOffset = this.rightAxisXOffset()
 		const rightAxisX = width - rightAxisXOffset
 		const rightAxisXFixed = rightAxisX.toFixed(1)
-		const axisYOffset = hasXLabels ? textHeight : 0
+		const axisYOffset = hasXLabels ? textHeight : (hasYLabels ? textHeight * 0.5 : 0)
 		const axisYOffsetFixed = axisYOffset.toFixed(1)
 
 		const rangeWidth = this.rangeWidth()
