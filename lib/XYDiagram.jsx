@@ -45,6 +45,7 @@ export default class XYDiagram extends React.Component {
 		yMax: PropTypes.number,
 		yFactor: PropTypes.number,
 		yColor: PropTypes.string,
+		yOpacity: PropTypes.number,
 		yLabelColor: PropTypes.string,
 		yGridOrigin: PropTypes.number,
 		yGridSpacing: PropTypes.number,
@@ -64,6 +65,7 @@ export default class XYDiagram extends React.Component {
 		y2Max: PropTypes.number,
 		y2Factor: PropTypes.number,
 		y2Color: PropTypes.string,
+		y2Opacity: PropTypes.number,
 		y2LabelColor: PropTypes.string,
 		y2LabelOrigin: PropTypes.number,
 		y2LabelSpacing: PropTypes.number,
@@ -81,6 +83,7 @@ export default class XYDiagram extends React.Component {
 		y3Max: PropTypes.number,
 		y3Factor: PropTypes.number,
 		y3Color: PropTypes.string,
+		y3Opacity: PropTypes.number,
 		y3LabelOrigin: PropTypes.number,
 		y3LabelSpacing: PropTypes.number,
 		y3LabelFunc: PropTypes.func,
@@ -94,6 +97,7 @@ export default class XYDiagram extends React.Component {
 		y4Max: PropTypes.number,
 		y4Factor: PropTypes.number,
 		y4Color: PropTypes.string,
+		y4Opacity: PropTypes.number,
 		y4LabelOrigin: PropTypes.number,
 		y4LabelSpacing: PropTypes.number,
 		y4LabelFunc: PropTypes.func,
@@ -151,6 +155,7 @@ export default class XYDiagram extends React.Component {
 		yMax: 1,
 		yFactor: 1,
 		yColor: "#0082C8",
+		yOpacity: 1,
 		yGridOrigin: 0,
 		yGridColor: "#AAA",
 		yLabelOrigin: 0,
@@ -164,6 +169,7 @@ export default class XYDiagram extends React.Component {
 		y2Max: 1,
 		y2Factor: 1,
 		y2Color: "#92D050",
+		y2Opacity: 1,
 		y2LabelOrigin: 0,
 		y2LabelFunc: defaultLabelFunc,
 		y2LabelAtPoint: false,
@@ -176,6 +182,7 @@ export default class XYDiagram extends React.Component {
 		y3Max: 1,
 		y3Factor: 1,
 		y3Color: "#FF00FF",
+		y3Opacity: 1,
 		y3LabelOrigin: 0,
 		y3LabelFunc: defaultLabelFunc,
 		y3LineWidth: 1,
@@ -186,6 +193,7 @@ export default class XYDiagram extends React.Component {
 		y4Max: 1,
 		y4Factor: 1,
 		y4Color: "#647280",
+		y4Opacity: 1,
 		y4LabelOrigin: 0,
 		y4LabelFunc: defaultLabelFunc,
 		y4LineWidth: 1,
@@ -374,10 +382,10 @@ export default class XYDiagram extends React.Component {
 		const rightMarkerVisible = this.isRightMarkerVisible()
 
 		const { labelFont, labelSize, labelColor, xLabelOrigin, xLabelSpacing, xLabelAtPoint, yLabelAtPoint, xLabelFunc, xLabelNoOverlapCheck, xStep } = this.props
-		const { yLabelOrigin, yLabelSpacing, yLabelFunc, yColor, markerSize, yAxisTitle } = this.props
-		const { y2LabelOrigin, y2LabelSpacing, y2LabelFunc, y2LabelAtPoint, y2Color, markerSize2, y2AxisTitle } = this.props
-		const { y3Color, markerSize3 } = this.props
-		const { y4Color, markerSize4 } = this.props
+		const { yLabelOrigin, yLabelSpacing, yLabelFunc, yColor, yOpacity, markerSize, yAxisTitle } = this.props
+		const { y2LabelOrigin, y2LabelSpacing, y2LabelFunc, y2LabelAtPoint, y2Color, y2Opacity, markerSize2, y2AxisTitle } = this.props
+		const { y3Color, y3Opacity, markerSize3 } = this.props
+		const { y4Color, y4Opacity, markerSize4 } = this.props
 
 		const yLabelColor = this.props.yLabelColor || yColor
 		const y2LabelColor = this.props.y2LabelColor || y2Color
@@ -721,7 +729,7 @@ export default class XYDiagram extends React.Component {
 					} else {
 						y = yZero
 					}
-					bars.push(<rect key={"yBar" + i} x={x.toFixed(1)} y={y.toFixed(1)} width={yBars} height={h.toFixed(1)} stroke="none" fill={yColor}/>)
+					bars.push(<rect key={"yBar" + i} x={x.toFixed(1)} y={y.toFixed(1)} width={yBars} height={h.toFixed(1)} stroke="none" fill={yColor} fillOpacity={yOpacity}/>)
 				}
 			}
 		} else {
@@ -797,7 +805,7 @@ export default class XYDiagram extends React.Component {
 						} else {
 							y2 = y2Zero
 						}
-						bars.push(<rect key={"y2Bar" + i} x={x.toFixed(1)} y={y2.toFixed(1)} width={y2Bars} height={h.toFixed(1)} stroke="none" fill={y2Color}/>)
+						bars.push(<rect key={"y2Bar" + i} x={x.toFixed(1)} y={y2.toFixed(1)} width={y2Bars} height={h.toFixed(1)} stroke="none" fill={y2Color} fillOpacity={y2Opacity}/>)
 					}
 				}
 			} else {
@@ -848,7 +856,7 @@ export default class XYDiagram extends React.Component {
 						} else {
 							y3 = y3Zero
 						}
-						bars.push(<rect key={"y3Bar" + i} x={x.toFixed(1)} y={y3.toFixed(1)} width={y3Bars} height={h.toFixed(1)} stroke="none" fill={y3Color}/>)
+						bars.push(<rect key={"y3Bar" + i} x={x.toFixed(1)} y={y3.toFixed(1)} width={y3Bars} height={h.toFixed(1)} stroke="none" fill={y3Color} fillOpacity={y3Opacity}/>)
 					}
 				}
 			} else {
@@ -1084,10 +1092,10 @@ export default class XYDiagram extends React.Component {
 					<polyline stroke={this.props.axisColor} strokeWidth="1" fill="none" points={axisPoints}/>
 					{labels}
 					{bars}
-					{y4Points.length > 0 ? <polyline stroke={y4Color} strokeWidth={this.props.y4LineWidth} strokeDasharray={this.props.y4LineDashes} fill="none" points={y4Points}/> : null}
-					{y3Points.length > 0 ? <polyline stroke={y3Color} strokeWidth={this.props.y3LineWidth} strokeDasharray={this.props.y3LineDashes} fill="none" points={y3Points}/> : null}
-					{y2Points.length > 0 ? <polyline stroke={y2Color} strokeWidth={this.props.y2LineWidth} strokeDasharray={this.props.y2LineDashes} fill="none" points={y2Points}/> : null}
-					{yPoints.length > 0 ? <polyline stroke={yColor} strokeWidth={this.props.yLineWidth} strokeDasharray={this.props.yLineDashes} fill="none" points={yPoints}/> : null}
+					{y4Points.length > 0 ? <polyline stroke={y4Color} strokeOpacity={y4Opacity} strokeWidth={this.props.y4LineWidth} strokeDasharray={this.props.y4LineDashes} fill="none" points={y4Points}/> : null}
+					{y3Points.length > 0 ? <polyline stroke={y3Color} strokeOpacity={y3Opacity} strokeWidth={this.props.y3LineWidth} strokeDasharray={this.props.y3LineDashes} fill="none" points={y3Points}/> : null}
+					{y2Points.length > 0 ? <polyline stroke={y2Color} strokeOpacity={y2Opacity} strokeWidth={this.props.y2LineWidth} strokeDasharray={this.props.y2LineDashes} fill="none" points={y2Points}/> : null}
+					{yPoints.length > 0 ? <polyline stroke={yColor} strokeOpacity={yOpacity} strokeWidth={this.props.yLineWidth} strokeDasharray={this.props.yLineDashes} fill="none" points={yPoints}/> : null}
 					{markers}
 					{selectedMarker}
 					<g ref="leftMarkerGroup">
