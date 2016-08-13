@@ -25,6 +25,9 @@ export default class XYDiagram extends React.Component {
 		axisColor: PropTypes.string,
 		backgroundColor: PropTypes.string,
 
+		leftAxisXOffset: PropTypes.number,
+		rightAxisXOffset: PropTypes.number,
+
 		x: PropTypes.array.isRequired,
 		xStep: PropTypes.number,
 		xMin: React.PropTypes.oneOfType([PropTypes.number, PropTypes.func]),
@@ -258,6 +261,9 @@ export default class XYDiagram extends React.Component {
 	}
 
 	axisXOffset() {
+		if (this.props.leftAxisXOffset) {
+			return this.props.leftAxisXOffset
+		}
 		if (!this.hasLeftYLabels()) {
 			return 0
 		}
@@ -266,6 +272,9 @@ export default class XYDiagram extends React.Component {
 	}
 
 	rightAxisXOffset() {
+		if (this.props.rightAxisXOffset) {
+			return this.props.rightAxisXOffset
+		}
 		if (!this.hasRightYLabels()) {
 			return 0
 		}
