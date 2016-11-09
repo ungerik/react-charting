@@ -47,6 +47,7 @@ export default class XYDiagram extends React.Component {
 		yMin: PropTypes.number,
 		yMax: PropTypes.number,
 		yFactor: PropTypes.number,
+		yValuesPerX: PropTypes.number, // show that number of bars per point, y.length == x.length * yValuesPerX
 		yColor: PropTypes.string,
 		yOpacity: PropTypes.number,
 		yLabelColor: PropTypes.string,
@@ -67,6 +68,7 @@ export default class XYDiagram extends React.Component {
 		y2Min: PropTypes.number,
 		y2Max: PropTypes.number,
 		y2Factor: PropTypes.number,
+		y2ValuesPerX: PropTypes.number, // show that number of bars per point, y2.length == x.length * y2ValuesPerX
 		y2Color: PropTypes.string,
 		y2Opacity: PropTypes.number,
 		y2LabelColor: PropTypes.string,
@@ -85,6 +87,7 @@ export default class XYDiagram extends React.Component {
 		y3Min: PropTypes.number,
 		y3Max: PropTypes.number,
 		y3Factor: PropTypes.number,
+		y3ValuesPerX: PropTypes.number, // show that number of bars per point, y3.length == x.length * y3ValuesPerX
 		y3Color: PropTypes.string,
 		y3Opacity: PropTypes.number,
 		y3LabelOrigin: PropTypes.number,
@@ -157,6 +160,7 @@ export default class XYDiagram extends React.Component {
 		yMin: 0,
 		yMax: 1,
 		yFactor: 1,
+		yValuesPerX: 1,
 		yColor: "#0082C8",
 		yOpacity: 1,
 		yGridOrigin: 0,
@@ -171,6 +175,7 @@ export default class XYDiagram extends React.Component {
 		y2Min: 0,
 		y2Max: 1,
 		y2Factor: 1,
+		y2ValuesPerX: 1,
 		y2Color: "#92D050",
 		y2Opacity: 1,
 		y2LabelOrigin: 0,
@@ -184,6 +189,7 @@ export default class XYDiagram extends React.Component {
 		y3Min: 0,
 		y3Max: 1,
 		y3Factor: 1,
+		y3ValuesPerX: 1,
 		y3Color: "#FF00FF",
 		y3Opacity: 1,
 		y3LabelOrigin: 0,
@@ -411,6 +417,7 @@ export default class XYDiagram extends React.Component {
 		const { y3Min, y3Max, y3Factor, y3Bars } = this.props
 		const { y4Min, y4Max, y4Factor } = this.props
 		const { xGridOrigin, xGridSpacing, xGridAtPoint, xGridColor, yGridOrigin, yGridSpacing, yGridColor, backgroundColor } = this.props
+		const { yValuesPerX, y2ValuesPerX, y3ValuesPerX } = this.props
 
 		const xOffset = leftMarkerVisible ? this.props.leftRightMarkerWidth : 0
 		const axisXOffset = this.axisXOffset()
@@ -520,7 +527,7 @@ export default class XYDiagram extends React.Component {
 		////////////////////////////////////////////////////////////////////////////////
 		// Labels:
 
-		const numYPoints = Math.min(this.props.x.length, this.props.y.length)
+		const numYPoints = Math.min(this.props.x.length, this.props.y.length / yValuesPerX)
 
 		const labels = []
 		if (hasXLabels) {
@@ -572,7 +579,7 @@ export default class XYDiagram extends React.Component {
 
 			for (let i = 0; i < numYPoints; i += xStep) {
 				const x = this.props.x[i]
-				const y = this.props.y[i]
+				const y = this.props.y[i * yValuesPerX]
 				if (!Number.isFinite(x) || !Number.isFinite(y) || x < xMin || x > xMax) {
 					continue
 				}
@@ -602,7 +609,7 @@ export default class XYDiagram extends React.Component {
 
 			for (let i = 0; i < numYPoints; i += xStep) {
 				const x = this.props.x[i]
-				const y2 = this.props.y2[i]
+				const y2 = this.props.y2[i * y2ValuesPerX]
 				if (!Number.isFinite(x) || !Number.isFinite(y2) || x < xMin || x > xMax) {
 					continue
 				}
@@ -717,6 +724,7 @@ export default class XYDiagram extends React.Component {
 		let yPoints = ""
 		if (yBars) {
 			// draw y values as bars
+			const barWidth = yBars / yValuesPerX;
 			const yZero = transformY(0)
 			let moveLeft
 			if (!y2Bars && !y3Bars) {
@@ -727,25 +735,31 @@ export default class XYDiagram extends React.Component {
 				moveLeft = yBars
 			}
 			for (let i = 0; i < numYPoints; i += xStep) {
-				let x = this.props.x[i]
-				let y = this.props.y[i]
-				if (Number.isFinite(x) && Number.isFinite(y)) {
-					x = transformX(x) - moveLeft
-					y = transformY(y)
-					let h = y - yZero
-					if (h < 0) {
-						h = -h
-					} else {
-						y = yZero
+				for (let j = 0; j < yValuesPerX; j++) {
+					let x = this.props.x[i]
+					let y = this.props.y[i * yValuesPerX + j]
+					if (Number.isFinite(x) && Number.isFinite(y)) {
+						x = transformX(x) - moveLeft + (j * barWidth)
+						y = transformY(y)
+						let h = y - yZero
+						if (h < 0) {
+							h = -h
+						} else {
+							y = yZero
+						}
+						let key = "yBar" + i
+						if (j > 0) {
+							key += "_" + j
+						}
+						bars.push(<rect key={key} x={x.toFixed(1)} y={y.toFixed(1)} width={barWidth} height={h.toFixed(1)} stroke="none" fill={yColor} fillOpacity={yOpacity}/>)
 					}
-					bars.push(<rect key={"yBar" + i} x={x.toFixed(1)} y={y.toFixed(1)} width={yBars} height={h.toFixed(1)} stroke="none" fill={yColor} fillOpacity={yOpacity}/>)
 				}
 			}
 		} else {
 			// draw y values as line-strip
 			for (let i = 0; i < numYPoints; i += xStep) {
 				const x = this.props.x[i]
-				const y = this.props.y[i]
+				const y = this.props.y[i * yValuesPerX]
 				if (Number.isFinite(x) && Number.isFinite(y)) {
 					yPoints += `${transformX(x).toFixed(1)},${transformY(y).toFixed(1)} `
 				}
@@ -754,7 +768,7 @@ export default class XYDiagram extends React.Component {
 				// if we are stepping over values, make sure to add the last one
 				const i = numYPoints - 1
 				const x = this.props.x[i]
-				const y = this.props.y[i]
+				const y = this.props.y[i * yValuesPerX]
 				if (Number.isFinite(x) && Number.isFinite(y)) {
 					yPoints += `${transformX(x).toFixed(1)},${transformY(y).toFixed(1)} `
 				}
@@ -766,7 +780,7 @@ export default class XYDiagram extends React.Component {
 		if (hasSelectedMarker) {
 			const i = selectedIndex
 			const x = this.props.x[i]
-			const y = this.props.y[i]
+			const y = this.props.y[i * yValuesPerX]
 			if (Number.isFinite(x) && Number.isFinite(y)) {
 				selectedMarker = (
 					<circle
@@ -791,8 +805,9 @@ export default class XYDiagram extends React.Component {
 		let numY2Points = 0
 		let y2Points = ""
 		if (this.props.y2) {
-			numY2Points = Math.min(this.props.x.length, this.props.y2.length)
+			numY2Points = Math.min(this.props.x.length, this.props.y2.length / y2ValuesPerX)
 			if (y2Bars) {
+				const barWidth = y2Bars / y2ValuesPerX;
 				const y2Zero = transformY2(0)
 				let moveLeft
 				if (yBars && !y3Bars) {
@@ -803,24 +818,30 @@ export default class XYDiagram extends React.Component {
 					moveLeft = y2Bars * 0.5
 				}
 				for (let i = 0; i < numY2Points; i += xStep) {
-					let x = this.props.x[i]
-					let y2 = this.props.y2[i]
-					if (Number.isFinite(x) && Number.isFinite(y2)) {
-						x = transformX(x) - moveLeft
-						y2 = transformY2(y2)
-						let h = y2 - y2Zero
-						if (h < 0) {
-							h = -h
-						} else {
-							y2 = y2Zero
+					for (let j = 0; j < y2ValuesPerX; j++) {
+						let x = this.props.x[i]
+						let y2 = this.props.y2[i * y2ValuesPerX + j]
+						if (Number.isFinite(x) && Number.isFinite(y2)) {
+							x = transformX(x) - moveLeft + (j * barWidth)
+							y2 = transformY2(y2)
+							let h = y2 - y2Zero
+							if (h < 0) {
+								h = -h
+							} else {
+								y2 = y2Zero
+							}
+							let key = "y2Bar" + i
+							if (j > 0) {
+								key += "_" + j
+							}
+							bars.push(<rect key={key} x={x.toFixed(1)} y={y2.toFixed(1)} width={barWidth} height={h.toFixed(1)} stroke="none" fill={y2Color} fillOpacity={y2Opacity}/>)
 						}
-						bars.push(<rect key={"y2Bar" + i} x={x.toFixed(1)} y={y2.toFixed(1)} width={y2Bars} height={h.toFixed(1)} stroke="none" fill={y2Color} fillOpacity={y2Opacity}/>)
 					}
 				}
 			} else {
 				for (let i = 0; i < numY2Points; i += xStep) {
 					const x = this.props.x[i]
-					const y2 = this.props.y2[i]
+					const y2 = this.props.y2[i * y2ValuesPerX]
 					if (Number.isFinite(x) && Number.isFinite(y2)) {
 						y2Points += ` ${transformX(x).toFixed(1)},${transformY2(y2).toFixed(1)}`
 					}
@@ -828,7 +849,7 @@ export default class XYDiagram extends React.Component {
 				if (xStep > 1) {
 					const i = numY2Points - 1
 					const x = this.props.x[i]
-					const y2 = this.props.y2[i]
+					const y2 = this.props.y2[i * y2ValuesPerX]
 					if (Number.isFinite(x) && Number.isFinite(y2)) {
 						y2Points += ` ${transformX(x).toFixed(1)},${transformY2(y2).toFixed(1)}`
 					}
@@ -842,8 +863,9 @@ export default class XYDiagram extends React.Component {
 		let numY3Points = 0
 		let y3Points = ""
 		if (this.props.y3) {
-			numY3Points = Math.min(this.props.x.length, this.props.y3.length)
+			numY3Points = Math.min(this.props.x.length, this.props.y3.length / y3ValuesPerX)
 			if (y3Bars) {
+				const barWidth = y3Bars / y3ValuesPerX;
 				const y3Zero = transformY3(0)
 				let moveLeft
 				if (!yBars && !y3Bars) {
@@ -854,24 +876,30 @@ export default class XYDiagram extends React.Component {
 					moveLeft = 0
 				}
 				for (let i = 0; i < numY3Points; i += xStep) {
-					let x = this.props.x[i]
-					let y3 = this.props.y3[i]
-					if (Number.isFinite(x) && Number.isFinite(y3)) {
-						x = transformX(x) - moveLeft
-						y3 = transformY3(y3)
-						let h = y3 - y3Zero
-						if (h < 0) {
-							h = -h
-						} else {
-							y3 = y3Zero
+					for (let j = 0; j < y3ValuesPerX; j++) {
+						let x = this.props.x[i]
+						let y3 = this.props.y3[i * y3ValuesPerX + j]
+						if (Number.isFinite(x) && Number.isFinite(y3)) {
+							x = transformX(x) - moveLeft + (j * barWidth)
+							y3 = transformY3(y3)
+							let h = y3 - y3Zero
+							if (h < 0) {
+								h = -h
+							} else {
+								y3 = y3Zero
+							}
+							let key = "y3Bar" + i
+							if (j > 0) {
+								key += "_" + j
+							}
+							bars.push(<rect key={key} x={x.toFixed(1)} y={y3.toFixed(1)} width={barWidth} height={h.toFixed(1)} stroke="none" fill={y3Color} fillOpacity={y3Opacity}/>)
 						}
-						bars.push(<rect key={"y3Bar" + i} x={x.toFixed(1)} y={y3.toFixed(1)} width={y3Bars} height={h.toFixed(1)} stroke="none" fill={y3Color} fillOpacity={y3Opacity}/>)
 					}
 				}
 			} else {
 				for (let i = 0; i < numY3Points; i += xStep) {
 					const x = this.props.x[i]
-					const y3 = this.props.y3[i]
+					const y3 = this.props.y3[i * y3ValuesPerX]
 					if (Number.isFinite(x) && Number.isFinite(y3)) {
 						y3Points += ` ${transformX(x).toFixed(1)},${transformY3(y3).toFixed(1)}`
 					}
@@ -879,7 +907,7 @@ export default class XYDiagram extends React.Component {
 				if (xStep > 1) {
 					const i = numY3Points - 1
 					const x = this.props.x[i]
-					const y3 = this.props.y3[i]
+					const y3 = this.props.y3[i * y3ValuesPerX]
 					if (Number.isFinite(x) && Number.isFinite(y3)) {
 						y3Points += ` ${transformX(x).toFixed(1)},${transformY3(y3).toFixed(1)}`
 					}
@@ -912,7 +940,7 @@ export default class XYDiagram extends React.Component {
 		}
 
 		////////////////////////////////////////////////////////////////////////////////
-		// Markers vor data series points:
+		// Markers for data series points:
 
 		const markers = []
 		if (markerSize > 0) {
@@ -920,7 +948,7 @@ export default class XYDiagram extends React.Component {
 			const onClick = this.props.onClickMarker ? this.onClickMarker : null
 			for (let i = 0; i < numYPoints; i += xStep) {
 				const x = this.props.x[i]
-				const y = this.props.y[i]
+				const y = this.props.y[i * yValuesPerX]
 				if (Number.isFinite(x) && Number.isFinite(y) && !(hasSelectedMarker && i === selectedIndex)) {
 					markers.push(
 						<circle
@@ -943,7 +971,7 @@ export default class XYDiagram extends React.Component {
 			const r = markerSize2 * 0.5
 			for (let i = 0; i < numY2Points; i += xStep) {
 				const x = this.props.x[i]
-				const y = this.props.y2[i]
+				const y = this.props.y2[i * y2ValuesPerX]
 				if (Number.isFinite(x) && Number.isFinite(y)) {
 					markers.push(
 						<circle
@@ -962,7 +990,7 @@ export default class XYDiagram extends React.Component {
 			const r = markerSize3 * 0.5
 			for (let i = 0; i < numY3Points; i += xStep) {
 				const x = this.props.x[i]
-				const y = this.props.y3[i]
+				const y = this.props.y3[i * y3ValuesPerX]
 				if (Number.isFinite(x) && Number.isFinite(y)) {
 					markers.push(
 						<circle
