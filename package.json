@@ -1,6 +1,6 @@
 {
   "name": "react-charting",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Chart components for ReactJS",
   "main": "lib/index.js",
   "scripts": {
