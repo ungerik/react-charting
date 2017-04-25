@@ -303,12 +303,14 @@ export default class XYDiagram extends React.PureComponent {
 			.draggable({
 				startAxis: "x",
 				lockAxis: "x",
+				preventDefault: "always",
 				restrict: {
 					restriction: parent,
 					elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
 				}
 			})
-			.on("dragstart", () => {
+			.on("dragstart", (event) => {
+				event.preventDefault()
 				// Only way to change the class of an SVG element:
 				marker.setAttribute("class", "dragging")
 			})
@@ -1148,12 +1150,12 @@ export default class XYDiagram extends React.PureComponent {
 						<rect
 							ref="leftMarker"
 							x={leftMarkerX-this.props.leftRightMarkerWidth}
-							y={axisYOffset} 
+							y={axisYOffset}
 							width={this.props.leftRightMarkerWidth}
 							height={leftMarkerHeight.toFixed(1)}
 							stroke="none"
 							fill="url(#leftMarkerGradient)"
-							style={{touchAction: "pan-x"}}
+							style={{touchAction: "none"}}
 						/>
 					</g>
 					<g ref="rightMarkerGroup">
@@ -1175,7 +1177,7 @@ export default class XYDiagram extends React.PureComponent {
 							height={rightMarkerHeight.toFixed(1)}
 							stroke="none"
 							fill="url(#rightMarkerGradient)"
-							style={{touchAction: "pan-x"}}
+							style={{touchAction: "none"}}
 						/>
 					</g>
 				</g>
