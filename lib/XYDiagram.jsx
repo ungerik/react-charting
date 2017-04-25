@@ -8,7 +8,7 @@ function defaultLabelFunc(value) {
 }
 
 
-export default class XYDiagram extends React.Component {
+export default class XYDiagram extends React.PureComponent {
 	static displayName = "XYDiagram"
 
 	static propTypes = {
@@ -224,9 +224,6 @@ export default class XYDiagram extends React.Component {
 	}
 
 	static shiftArray(a, val) {
-		// for (let i = 1; i < a.length; i++) {
-		// 	a[i-1] = a[i]
-		// }
 		a.copyWithin(0, 1)
 		a[a.length - 1] = val
 	}
@@ -304,6 +301,8 @@ export default class XYDiagram extends React.Component {
 		marker = ReactDOM.findDOMNode(marker)
 		interact(marker)
 			.draggable({
+				startAxis: "x",
+				lockAxis: "x",
 				restrict: {
 					restriction: parent,
 					elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
@@ -1149,10 +1148,12 @@ export default class XYDiagram extends React.Component {
 						<rect
 							ref="leftMarker"
 							x={leftMarkerX-this.props.leftRightMarkerWidth}
-							y={axisYOffset} width={this.props.leftRightMarkerWidth}
+							y={axisYOffset} 
+							width={this.props.leftRightMarkerWidth}
 							height={leftMarkerHeight.toFixed(1)}
 							stroke="none"
 							fill="url(#leftMarkerGradient)"
+							style={{touchAction: "pan-x"}}
 						/>
 					</g>
 					<g ref="rightMarkerGroup">
@@ -1174,6 +1175,7 @@ export default class XYDiagram extends React.Component {
 							height={rightMarkerHeight.toFixed(1)}
 							stroke="none"
 							fill="url(#rightMarkerGradient)"
+							style={{touchAction: "pan-x"}}
 						/>
 					</g>
 				</g>
