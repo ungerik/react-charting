@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:umd": "rm -f ./dist/index.umd.js* && npx babel ./lib/ --out-file ./dist/index.umd.js --source-maps --plugins transform-es2015-modules-umd",
-    "build:browser": "rm -f ./dist/index.browser.js* && npx babel ./lib/ --out-file ./dist/index.browser.js --source-maps"
+    "build:browser": "rm -f ./dist/index.browser.js* && npx babel ./lib/ --out-file ./dist/index.browser.js --source-maps && npx browserify ./dist/index.browser.js --outfile ./dist/index.browser2.js"
   },
   "repository": {
     "type": "git",
