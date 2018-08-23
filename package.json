@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rm -f ./dist/* && npx babel ./lib/ --out-file ./dist/index.js --source-maps"
+    "build:umd": "rm -f ./dist/index.umd.js* && npx babel ./lib/ --out-file ./dist/index.umd.js --source-maps --plugins transform-es2015-modules-umd",
+    "build:browser": "rm -f ./dist/index.browser.js* && npx babel ./lib/ --out-file ./dist/index.browser.js --source-maps"
   },
   "repository": {
     "type": "git",
@@ -33,6 +34,7 @@
     "babel-plugin-transform-class-properties": "^6.24.1",
     "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
     "babel-preset-env": "^1.7.0",
-    "babel-preset-react": "6"
+    "babel-preset-react": "6",
+    "browserify": "^16.2.2"
   }
 }
