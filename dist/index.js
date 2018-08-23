@@ -1,13 +1,13 @@
 (function (global, factory) {
 	if (typeof define === "function" && define.amd) {
-		define(["exports", "react", "react-dom", "interact.js"], factory);
+		define(["exports"], factory);
 	} else if (typeof exports !== "undefined") {
-		factory(exports, require("react"), require("react-dom"), require("interact.js"));
+		factory(exports);
 	} else {
 		var mod = {
 			exports: {}
 		};
-		factory(mod.exports, global.react, global.reactDom, global.interact);
+		factory(mod.exports);
 		global.XYDiagram = mod.exports;
 	}
 })(this, function (exports, _react, _reactDom, _interact) {

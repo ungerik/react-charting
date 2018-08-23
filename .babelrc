@@ -1,7 +1,12 @@
 {
 	"plugins": [
         "transform-class-properties",
-        "transform-es2015-modules-umd"
+        [
+            "transform-es2015-modules-umd",
+            {
+
+            }
+        ]
     ],
 	"presets": [
         "react",
